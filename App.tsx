@@ -1,6 +1,8 @@
 import { StyleSheet, Text, View, StatusBar } from "react-native";
 import Navigation from "./components/Navigation";
 import AppLoading from "expo-app-loading";
+import { QueryClient, QueryClientProvider } from "react-query";
+
 import {
   useFonts,
   Poppins_100Thin,
@@ -45,12 +47,16 @@ export default function App() {
     Poppins_900Black_Italic,
   });
 
+  const queryClient = new QueryClient();
+
   if (!fontsLoaded) {
     return <AppLoading />;
   }
   return (
     <View style={styles.container}>
-      <Navigation />
+      <QueryClientProvider client={queryClient}>
+        <Navigation />
+      </QueryClientProvider>
     </View>
   );
 }

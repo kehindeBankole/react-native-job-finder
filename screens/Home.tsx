@@ -1,21 +1,47 @@
 import {
+  FlatList,
   Image,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../constants";
 import { Bell, FilterIcon, SearchIcon } from "../assets/svg/Index";
+import { useQuery } from "react-query";
+import HTMLView from "react-native-htmlview";
+import JobCard from "../components/JobCard";
 
 export default function Home() {
   const [text, onChangeText] = React.useState("Product Designer in Bronx NY");
+  const { isLoading, isError, data, error } = useQuery("todos", () =>
+    fetch("https://arbeitnow.com/api/job-board-api").then((res) => res.json())
+  );
+  if (isLoading) return <Text>loading</Text>;
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <Image source={require("../assets/user.png")} />
+        <Bell />
+      </View>
+      <View style={[styles.header, styles.count]}>
+        <Text style={styles.countNumber}>{data.data.length} jobs found</Text>
+      </View>
+      <FlatList
+        data={data.data}
+        contentContainerStyle={{
+          marginTop: 16,
+          paddingBottom: 100,
+        }}
+        showsVerticalScrollIndicator={false}
+        renderItem={(item) => <JobCard item={item} />}
+        keyExtractor={(item) => item.id}
+      />
       <View style={styles.search}>
         <SearchIcon />
 
@@ -25,10 +51,6 @@ export default function Home() {
           value={text}
         />
         <FilterIcon />
-      </View>
-      <View style={styles.header}>
-        <Image source={require("../assets/user.png")} />
-        <Bell />
       </View>
     </SafeAreaView>
   );
@@ -73,8 +95,19 @@ const styles = StyleSheet.create({
     borderBottomColor: "transparent",
     marginRight: 10,
   },
+  count: {
+    marginTop: 30,
+  },
+  countNumber: {
+    color: colors.black,
+    fontSize: 13,
+    fontFamily: "Poppins_700Bold",
+  },
 });
 
+{
+  /* <HTMLView value={data.data[0].description} stylesheet={styles} /> */
+}
 // async function clear() {
 //   try {
 //     await AsyncStorage.clear();

@@ -20,7 +20,11 @@ import JobCard from "../components/JobCard";
 export default function Home() {
   const [text, onChangeText] = React.useState("Product Designer in Bronx NY");
   const { isLoading, isError, data, error } = useQuery("todos", () =>
-    fetch("https://arbeitnow.com/api/job-board-api").then((res) => res.json())
+    fetch("https://findwork.dev/api/jobs", {
+      headers: {
+        Authorization: "Token 0e99233b502e4981fa62b1471ffa0e09d7c67e91",
+      },
+    }).then((res) => res.json())
   );
   if (isLoading) return <Text>loading</Text>;
   return (
@@ -30,12 +34,14 @@ export default function Home() {
         <Bell />
       </View>
       <View style={[styles.header, styles.count]}>
-        <Text style={styles.countNumber}>{data.data.length} jobs found</Text>
+        <Text style={styles.countNumber}>
+          {" "}
+          {data.results.length} jobs found
+        </Text>
       </View>
       <FlatList
-        data={data.data}
+        data={data.results}
         contentContainerStyle={{
-          marginTop: 16,
           paddingBottom: 100,
         }}
         showsVerticalScrollIndicator={false}
@@ -97,6 +103,7 @@ const styles = StyleSheet.create({
   },
   count: {
     marginTop: 30,
+    marginBottom: 16,
   },
   countNumber: {
     color: colors.black,

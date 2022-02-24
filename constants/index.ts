@@ -9,4 +9,4 @@ const colors: { [key: string]: string } = {
   badgeBg:"#F5F7FC"
 };
 const { height, width } = Dimensions.get("window");
-export { colors };
+export { colors , height , width};

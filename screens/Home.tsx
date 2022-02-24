@@ -8,25 +8,34 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useCallback, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { colors } from "../constants";
+import { colors, width, height } from "../constants";
 import { Bell, FilterIcon, SearchIcon } from "../assets/svg/Index";
 import { useQuery } from "react-query";
 import HTMLView from "react-native-htmlview";
 import JobCard from "../components/JobCard";
+import { useDebounce } from "use-debounce";
+import SkeletonLoader from "expo-skeleton-loader";
 
 export default function Home() {
-  const [text, onChangeText] = React.useState("Product Designer in Bronx NY");
-  const { isLoading, isError, data, error } = useQuery("todos", () =>
-    fetch("https://findwork.dev/api/jobs", {
+  const [text, setText] = useState("");
+  const [value] = useDebounce(text, 1000);
+  const { isLoading, isError, data, error } = useQuery(["posts", value], () =>
+    fetch(`https://findwork.dev/api/jobs?search=${value}`, {
       headers: {
         Authorization: "Token 0e99233b502e4981fa62b1471ffa0e09d7c67e91",
       },
     }).then((res) => res.json())
   );
-  if (isLoading) return <Text>loading</Text>;
+  if (isLoading)
+    return (
+      <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
+        <Image source={require("../assets/loader.gif")} />
+      </View>
+    );
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -35,12 +44,11 @@ export default function Home() {
       </View>
       <View style={[styles.header, styles.count]}>
         <Text style={styles.countNumber}>
-          {" "}
-          {data.results.length} jobs found
+          {data?.results.length} jobs found
         </Text>
       </View>
       <FlatList
-        data={data.results}
+        data={data?.results}
         contentContainerStyle={{
           paddingBottom: 100,
         }}
@@ -53,7 +61,7 @@ export default function Home() {
 
         <TextInput
           style={styles.input}
-          onChangeText={onChangeText}
+          onChangeText={(text) => setText(text)}
           value={text}
         />
         <FilterIcon />

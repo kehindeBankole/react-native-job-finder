@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from "../screens/Home";
 import Onboard from "../screens/Onboard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Job from "../screens/Job";
 
 const Stack = createNativeStackNavigator();
 
@@ -31,6 +32,7 @@ export default function Navigation() {
         {value === null && <Stack.Screen name="Board" component={Onboard} />}
 
         <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Details" component={Job} />
       </Stack.Navigator>
     </NavigationContainer>
   );

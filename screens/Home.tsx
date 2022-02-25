@@ -1,11 +1,14 @@
 import {
+  Button,
   FlatList,
   Image,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
+  Touchable,
   TouchableOpacity,
+  TouchableOpacityBase,
   View,
 } from "react-native";
 import React, { useEffect, useMemo, useCallback, useState } from "react";
@@ -19,7 +22,7 @@ import JobCard from "../components/JobCard";
 import { useDebounce } from "use-debounce";
 import SkeletonLoader from "expo-skeleton-loader";
 
-export default function Home() {
+export default function Home({ navigation }: { navigation: any }) {
   const [text, setText] = useState("");
   const [value] = useDebounce(text, 1000);
   const { isLoading, isError, data, error } = useQuery(["posts", value], () =>
@@ -53,7 +56,15 @@ export default function Home() {
           paddingBottom: 100,
         }}
         showsVerticalScrollIndicator={false}
-        renderItem={(item) => <JobCard item={item} />}
+        renderItem={(item) => (
+          <TouchableOpacity
+            onPressOut={navigation.navigate("Details", {
+              itemId: item.item.id,
+            })}
+          >
+            <JobCard item={item} />
+          </TouchableOpacity>
+        )}
         keyExtractor={(item) => item.id}
       />
       <View style={styles.search}>
